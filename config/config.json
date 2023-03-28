@@ -1,0 +1,10 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "rootroot",
+    "database": "expreader_db",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "jwt":"jwt-dev"
+}
