@@ -1,11 +1,13 @@
 const eH = require('../middleware/errorHandler');
 const { Sequelize } = require('../models');
+const fs = require('node:fs');
+const path = require('node:path');
 
-const UserBookStat = require('../models/userbookstat').Model;
 const Book = require('../models/book').Model;
 const Author = require('../models/author').Model;
 const Genre = require('../models/genre').Model;
 const Favorite = require('../models/favorite').Model;
+const UserBookStat = require('../models/userbookstat').Model;
 const BookAuthor = require('../models/bookauthor').Model;
 const BookGenre = require('../models/bookgenre').Model;
 
@@ -46,7 +48,7 @@ module.exports.getBook = async function (req, res) {
 
         if (!aBook)
             return res.send(`Книга не найдена`);
-        
+
         const authors = await BookAuthor.findAll({
             raw: true,
             where: { BookId: bId },
@@ -87,4 +89,37 @@ module.exports.getBook = async function (req, res) {
     } catch (err) {
         eH(res, err);
     }
+}
+
+
+// auth in header + bookId in body
+module.exports.downloadBook = async function (req, res) {
+    try {
+        let bId = req.body.bookId;
+        let uId = req.user.id;
+
+        // does user have the book?
+        _ubs = await UserBookStat.findOne({
+            raw: true, where: { BookId: bId, UserId: uId },
+            include: { model: Book, attributes: [] }, attributes: [[Sequelize.col('Book.fileName'), 'fileName']]
+        });
+
+        // if it has - search file and send
+        if (_ubs) {
+            const dir = path.join(__dirname, `../storage/books`, _ubs.fileName);
+
+            fs.access(dir, function (error) {
+                if (error) {
+                    return res.status(500).send(`Файл не найден`);
+                }
+                return res.status(200).sendFile(dir);
+            });
+        }
+
+        // if it doesnt have - just drop 
+        res.status(401).end();
+    } catch (err) {
+        eH(res, err);
+    }
+
 }
