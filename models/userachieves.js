@@ -16,5 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: false,
         modelName: 'UserAchieves',
     });
+    module.exports.Model = UserAchieves;
     return UserAchieves;
 };
