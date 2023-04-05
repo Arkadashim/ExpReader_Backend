@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "rootroot",
-    "database": "expreader_db",
-    "host": "localhost",
+    "username": "arkadashiim",
+    "password": "QWqw1212",
+    "database": "arkadashiim_expreader_db",
+    "host": "postgresql-arkadashiim.alwaysdata.net",
     "dialect": "postgres"
   },
   "jwt":"jwt-dev"
