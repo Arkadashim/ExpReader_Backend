@@ -8,11 +8,9 @@ module.exports.completeAchievement = async function (req, res) {
         const uID = req.user.id;
         const aID = req.body.achieveID;
 
-        await UserAchieve.update(
-            { isCompleted: true },
-            { where: { UserId: uID, AchievementId: aID } }
-        );
-        res.status(200);
+        await UserAchieve.findOrCreate({ where: { UserId: uID, AchievementId: aID } });
+        
+        res.status(200).end();
     } catch (err) {
         eH(res, err);
     }
