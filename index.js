@@ -29,6 +29,7 @@ for (let file of routesFiles) {
     app.use(`/${mainRoute}/${fileName}`, require(`./routes/${fileName}`));
 }
 
+
 // set public resources
 app.use('/public', express.static('public'));
 
