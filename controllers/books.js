@@ -108,16 +108,16 @@ module.exports.downloadBook = async function (req, res) {
         if (_ubs) {
             const dir = path.join(__dirname, `../storage/books`, _ubs.fileName);
 
-            fs.access(dir, function (error) {
+            fs.access(dir, (error) => {
                 if (error) {
                     return res.status(500).send(`Файл не найден`);
                 }
                 return res.status(200).sendFile(dir);
             });
+        } else {
+            // if it doesnt have - just drop 
+            res.status(401).end();
         }
-
-        // if it doesnt have - just drop 
-        res.status(401).end();
     } catch (err) {
         eH(res, err);
     }
