@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     UserAchieves.init({
-        isCompleted: DataTypes.BOOLEAN,
+        // isCompleted: DataTypes.BOOLEAN,
     }, {
         sequelize,
         timestamps: false,
