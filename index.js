@@ -30,7 +30,7 @@ for (let file of routesFiles) {
 }
 
 // set public resources
-app.use('/public', express.static('public'));
+app.use('/public', express.static(path.join(__dirname,'public')));
 
 // port of server and starting
 const PORT = process.env.PORT || 5000;
