@@ -132,3 +132,47 @@ module.exports.downloadBook = async function (req, res) {
     }
 
 }
+
+// auth in header
+module.exports.getLibBooks = async function (req, res) {
+    try {
+        let uId = req.user.id;
+
+        const _books = await UserBookStat.findAll({
+            raw: true,
+            where: { UserId: uId },
+            include: { model: Book, attributes: [] },
+            attributes: [
+                [Sequelize.col('Book.id'), 'id'],
+                [Sequelize.col('Book.title'), 'title'],
+                [Sequelize.col('Book.cover'), 'cover'],
+                [Sequelize.col('Book.pages'), 'bookPages'],
+                'currentPage', 'readPages', 'readDate', 'isRead'
+            ]
+        });
+
+        for (const i in _books) {
+            const authors = await BookAuthor.findAll({
+                raw: true,
+                where: { BookId: _books[i].id },
+                include: [{
+                    model: Author,
+                    attributes: []
+                }],
+                attributes: [
+                    [Sequelize.col('Author.name'), 'name']
+                ]
+            });
+
+            _books[i].authors = [];
+            for (var j in authors) {
+                _books[i].authors.push(authors[j].name);
+            }
+        }
+
+        res.status(200).json(_books);
+    } catch (err) {
+        eH(res, err);
+    }
+
+}
