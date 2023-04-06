@@ -17,15 +17,24 @@ module.exports.buyABook = async function (req, res) {
         let userId = req.user.id;
         let bookId = req.body.bookId;
 
-        await UserBookStat.create({
-            UserId: userId,
-            BookId: bookId,
-            isRead: false,
-            readPages: 0,
-            currentPage: 1,
-            readDate: Date.now()
+        const [book, created] = await UserBookStat.findOrCreate({
+            where: {
+                UserId: userId,
+                BookId: bookId,
+            },
+            defaults: {
+                isRead: false,
+                readPages: 0,
+                currentPage: 1,
+                readDate: Date.now()
+            }
         });
-        res.status(200).send(`Книга успешно добавлена`);
+
+        if (created) {
+            res.status(200).send(`Книга успешно добавлена`);
+        } else {
+            res.status(200).send(`Книга уже добавлена`);
+        }
     } catch (err) {
         eH(res, err);
     }
