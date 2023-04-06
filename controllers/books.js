@@ -22,7 +22,7 @@ module.exports.buyABook = async function (req, res) {
             BookId: bookId,
             isRead: false,
             readPages: 0,
-            currentPage: 0,
+            currentPage: 1,
             readDate: Date.now()
         });
         res.status(200).send(`Книга успешно добавлена`);
