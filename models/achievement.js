@@ -16,5 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Achievement',
     });
+    module.exports.Model = Achievement;
     return Achievement;
 };
