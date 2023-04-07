@@ -17,7 +17,7 @@ module.exports.getUserData = async function (req, res) {
 
         const _userData = await UserStat.findOne({
             raw: true,
-            where: {UserId: userId},
+            where: { UserId: userId },
             include: {
                 model: User,
                 attributes: []
@@ -31,8 +31,8 @@ module.exports.getUserData = async function (req, res) {
 
         _userData.achievesImg = await UserAchieves.findAll({
             raw: true,
-            where: {UserId: userId},
-            include: { model: Achievement, attributes: []},
+            where: { UserId: userId },
+            include: { model: Achievement, attributes: [] },
             attributes: [
                 [Sequelize.col('Achievement.image'), 'image']
             ]
@@ -40,13 +40,13 @@ module.exports.getUserData = async function (req, res) {
 
         _userData.userBooks = await UserBookStat.findAll({
             raw: true,
-            where: {UserId: userId},
+            where: { UserId: userId },
             include: { model: Book, attributes: [] },
             attributes: [
                 [Sequelize.col('Book.id'), 'id'],
                 [Sequelize.col('Book.cover'), 'cover'],
                 [Sequelize.col('Book.title'), 'title'],
-                [Sequelize.col('Book.pages'), 'bookPages'], 
+                [Sequelize.col('Book.pages'), 'bookPages'],
                 'readPages'
             ]
         });
@@ -54,8 +54,8 @@ module.exports.getUserData = async function (req, res) {
         for (const i in _userData.userBooks) {
             _userData.userBooks[i].authors = await BookAuthor.findAll({
                 raw: true,
-                where: {BookId: _userData.userBooks[i].id},
-                include: {model: Author, attributes: []},
+                where: { BookId: _userData.userBooks[i].id },
+                include: { model: Author, attributes: [] },
                 attributes: [
                     [Sequelize.col('Author.name'), 'name']
                 ]
