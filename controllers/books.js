@@ -147,6 +147,7 @@ module.exports.getLibBooks = async function (req, res) {
                 [Sequelize.col('Book.title'), 'title'],
                 [Sequelize.col('Book.cover'), 'cover'],
                 [Sequelize.col('Book.pages'), 'bookPages'],
+                [Sequelize.col('Book.fileName'), 'fileName'],
                 'currentPage', 'readPages', 'readDate', 'isRead'
             ]
         });
