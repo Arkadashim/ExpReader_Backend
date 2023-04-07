@@ -60,7 +60,6 @@ module.exports.getUserData = async function (req, res) {
                     [Sequelize.col('Author.name'), 'name']
                 ]
             }).then(authors => authors.map(authors => authors.name));
-            delete _userData.userBooks[i].id;
         }
 
         res.status(200).json(_userData);
