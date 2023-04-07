@@ -19,7 +19,7 @@ module.exports.completeAchievement = async function (req, res) {
 }
 
 // auth in header
-module.exports.getAllAchievements = async function (req, res) {
+module.exports.getUserAchievements = async function (req, res) {
     try {
         const uID = req.user.id;
 
@@ -32,6 +32,22 @@ module.exports.getAllAchievements = async function (req, res) {
                 [Sequelize.col('Achievement.title'), 'title'],
                 [Sequelize.col('Achievement.description'), 'description'],
                 [Sequelize.col('Achievement.image'), 'image']
+            ]
+        });
+
+        res.status(200).json(_ach);
+    } catch (err) {
+        eH(res, err);
+    }
+}
+
+module.exports.getAllAchievements = async function (req, res) {
+    try {
+
+        const _ach = await Achievement.findAll({
+            raw: true,
+            attributes: [
+                'id', 'title', 'description', 'image'
             ]
         });
 
