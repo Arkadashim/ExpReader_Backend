@@ -16,5 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: false,
         modelName: 'UserStat',
     });
+    module.exports.Model = UserStat;
     return UserStat;
 };
