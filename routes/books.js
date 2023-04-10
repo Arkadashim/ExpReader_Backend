@@ -7,5 +7,6 @@ router.get('/getBook', passport.authenticate('jwt', {session: false}), controlle
 router.get('/getLibBooks', passport.authenticate('jwt', {session: false}), controller.getLibBooks);
 router.post('/buyABook', passport.authenticate('jwt', {session: false}), controller.buyABook);
 router.post('/downloadBook', passport.authenticate('jwt', {session: false}), controller.downloadBook);
+router.post('/getFilteredBooks', passport.authenticate('jwt', {session: false}), controller.getFilteredBooks);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 const eH = require('../middleware/errorHandler');
 const { Sequelize } = require('../models');
+const { Op } = require("sequelize");
+const { insensitiveLike } = require('../middleware/comparer');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -168,6 +170,98 @@ module.exports.getLibBooks = async function (req, res) {
             _books[i].authors = [];
             for (var j in authors) {
                 _books[i].authors.push(authors[j].name);
+            }
+        }
+
+        res.status(200).json(_books);
+    } catch (err) {
+        eH(res, err);
+    }
+
+}
+
+module.exports.getFilteredBooks = async function (req, res) {
+    try {
+        // function for define a sort type
+        const ordering = () => {
+            switch (req.body.sortID) {
+                case 1: return ['title'];
+                case 2: return [['title', 'DESC']];
+                case 3: return ['price'];
+                case 4: return [['price', 'DESC']];
+                default: return null;
+            }
+        }
+
+        const where = {}; // decalre where block
+        const rarity = req.body.rarity;
+        if (rarity) {
+            if (rarity === "common") {
+                where.pages = { [Op.gte]: 1, [Op.lte]: 300 };
+            }
+
+            if (rarity === "rare") {
+                where.pages = { [Op.gte]: 301, [Op.lte]: 600 };
+            }
+
+            if (rarity === "epic") {
+                where.pages = { [Op.gte]: 601, [Op.lte]: 900 };
+            }
+
+            if (rarity === "legendary") {
+                where.pages = { [Op.gte]: 901 };
+            }
+        }
+
+        // search books
+        const _books = await Book.findAll({
+            raw: true,
+            order: ordering(),
+            where: where,
+            attributes: ['id', 'title', 'pages', 'cover', ['cost','price']]
+        });
+
+        for (const i in _books) {
+            // get authors of book
+            _books[i].authors = await BookAuthor.findAll({
+                raw: true,
+                where: { BookId: _books[i].id },
+                include: { model: Author, attributes: [] },
+                attributes: [
+                    [Sequelize.col('Author.name'), 'name']
+                ]
+            }).then(authors => authors.map(authors => authors.name));
+
+            // if there is searchValue in body
+            if (req.body.searchValue) {
+                let searchValue = req.body.searchValue;
+
+                let authorCheck = false;
+                let titleCheck = insensitiveLike(searchValue, _books[i].title); // search by title
+
+                for (const j in _books[i].authors) {
+                    let author = _books[i].authors[j];
+                    // check by authors
+                    if (insensitiveLike(searchValue, author)) {
+                        authorCheck = true;
+                        break;
+                    }
+                }
+
+                if (!authorCheck && !titleCheck) {
+                    _books.splice(i, 1); // if there are no such options remove unit in array
+                }
+            }
+
+            if (req.body.genres) {
+                const genres = await BookGenre.findOne({
+                    raw: true,
+                    where: { BookId: _books[i].id, GenreId: { [Op.or]: req.body.genres } }
+                });
+
+                if (!genres) {
+                    _books.splice(i, 1);
+                }
             }
         }
 
