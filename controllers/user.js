@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const eH = require('../middleware/errorHandler');
 const { Sequelize } = require('../models');
 
@@ -63,6 +64,56 @@ module.exports.getUserData = async function (req, res) {
         }
 
         res.status(200).json(_userData);
+    } catch (err) {
+        eH(res, err);
+    }
+}
+
+/* should contain: auth in header + "UBStat" - array of objects. 
+example: 
+
+    {
+        "UBStat": [
+            {
+                "bookID": 1,
+                "readPages": 23,
+                "currentPage": 23,
+                "isRead": false,
+                "readDate": ""
+            },
+            {
+                "bookID": 3,
+                "readPages": 10,
+                "currentPage": 12,
+                "isRead": false,
+                "readDate": ""
+            }
+        ]
+    }
+
+*/
+module.exports.updateUserBookStat = async function (req, res) {
+    try {
+        const data = req.body.UBStat;
+        const uID = req.user.id;
+
+        for (const i in data) {
+            try {
+                const bID = data[i].bookID;
+                delete data[i].bookID;
+
+                const currentData = await UserBookStat.findOne({ where: { BookId: bID, UserId: uID } });
+                if (currentData.readPages <= data[i].readPages && currentData.currentPage <= data[i].currentPage && currentData.isRead <= data[i].isRead) {
+                    data[i].readDate = Date.now();
+                    await UserBookStat.update(data[i], { where: { UserId: uID, BookId: bID } });
+                }
+            } catch (e) {
+                console.log(e);
+                continue;
+            }
+        }
+
+        res.status(200).send(`Updated successfully!`);
     } catch (err) {
         eH(res, err);
     }
