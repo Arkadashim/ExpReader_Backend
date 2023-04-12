@@ -41,6 +41,7 @@ module.exports.showFav = async function(req, res) {
             attributes: [
                 [Sequelize.col('Book.id'), 'id'],
                 [Sequelize.col('Book.title'), 'title'],
+                [Sequelize.col('Book.cost'), 'price'],
                 [Sequelize.col('Book.cover'), 'cover']
             ]
         });
