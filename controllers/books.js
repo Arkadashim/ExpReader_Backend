@@ -218,26 +218,30 @@ module.exports.getFilteredBooks = async function (req, res) {
             raw: true,
             order: ordering(),
             where: where,
-            attributes: ['id', 'title', 'pages', 'cover', ['cost','price']]
+            attributes: ['id', 'title', 'pages', 'cover', ['cost', 'price']]
         });
 
+        const _booksToSend = []; //  indexes for removing items
         for (const i in _books) {
             // get authors of book
             _books[i].authors = await BookAuthor.findAll({
                 raw: true,
-                where: { BookId: _books[i].id },
+                where: { BookId: _books[i]?.id },
                 include: { model: Author, attributes: [] },
                 attributes: [
                     [Sequelize.col('Author.name'), 'name']
                 ]
             }).then(authors => authors.map(authors => authors.name));
 
-            // if there is searchValue in body
-            if (req.body.searchValue) {
-                let searchValue = req.body.searchValue;
 
-                let authorCheck = false;
-                let titleCheck = insensitiveLike(searchValue, _books[i].title); // search by title
+            let authorCheck = false;
+            let titleCheck = false;
+            let genres = null;
+
+            // if there is searchValue in body
+            if (req.body.searchValue?.length) {
+                let searchValue = req.body.searchValue;
+                titleCheck = insensitiveLike(searchValue, _books[i].title); // search by title
 
                 for (const j in _books[i].authors) {
                     let author = _books[i].authors[j];
@@ -247,25 +251,26 @@ module.exports.getFilteredBooks = async function (req, res) {
                         break;
                     }
                 }
-
-                if (!authorCheck && !titleCheck) {
-                    _books.splice(i, 1); // if there are no such options remove unit in array
-                }
+            } else {
+                authorCheck = true; 
+                titleCheck = true;
             }
 
-            if (req.body.genres) {
-                const genres = await BookGenre.findOne({
+            if (req.body.genres?.length) {
+                genres = await BookGenre.findOne({
                     raw: true,
-                    where: { BookId: _books[i].id, GenreId: { [Op.or]: req.body.genres } }
+                    where: { BookId: _books[i]?.id, GenreId: { [Op.or]: req.body.genres } }
                 });
-
-                if (!genres) {
-                    _books.splice(i, 1);
-                }
+            } else {
+                genres = true;
+            } 
+                
+            if ((authorCheck || titleCheck) && genres) {
+                _booksToSend.push(_books[i]);
             }
         }
 
-        res.status(200).json(_books);
+        res.status(200).json(_booksToSend);
     } catch (err) {
         eH(res, err);
     }
