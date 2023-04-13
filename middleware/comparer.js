@@ -4,5 +4,7 @@ module.exports.insensitiveLike = (firstString, secondString) => {
     secondString = secondString.toUpperCase();
 
     var regExp = new RegExp(`^.*${firstString}.*$`, "g");
-    return secondString.match(regExp);
+    var result = secondString.match(regExp) !== null;
+
+    return result;
 }
