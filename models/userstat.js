@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     UserStat.init({
         readBooks: DataTypes.INTEGER,
         readPages: DataTypes.INTEGER,
+        achievements: DataTypes.ARRAY(DataTypes.BOOLEAN),
     }, {
         sequelize,
         timestamps: false,
