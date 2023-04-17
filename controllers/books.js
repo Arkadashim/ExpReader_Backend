@@ -35,7 +35,7 @@ module.exports.buyABook = async function (req, res) {
         if (created) {
             res.status(200).send(`Книга успешно добавлена`);
         } else {
-            res.status(200).send(`Книга уже добавлена`);
+            res.status(400).send(`Книга уже добавлена`);
         }
     } catch (err) {
         eH(res, err);
