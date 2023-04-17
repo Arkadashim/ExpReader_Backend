@@ -104,7 +104,8 @@ module.exports.updateUserBookStat = async function (req, res) {
 
                 const currentData = await UserBookStat.findOne({ where: { BookId: bID, UserId: uID } });
                 if (currentData.readPages <= data[i].readPages && currentData.currentPage <= data[i].currentPage && currentData.isRead <= data[i].isRead) {
-                    data[i].readDate = Date.now();
+                    let aDate = new Date(data[i].readDate);
+                    data[i].readDate = isNaN(aDate) ? Date.now() : aDate;
                     await UserBookStat.update(data[i], { where: { UserId: uID, BookId: bID } });
                 }
             } catch (e) {
