@@ -95,6 +95,7 @@ module.exports.getBook = async function (req, res) {
         }
 
         aBook.isFavorite = await Favorite.findOne({ raw: true, where: { UserId: uId, BookId: bId } }) !== null;
+        aBook.isBought = await UserBookStat.findOne({ raw: true, where: { UserId: uId, BookId: bId } }) !== null;
 
         res.status(200).json(aBook);
     } catch (err) {
