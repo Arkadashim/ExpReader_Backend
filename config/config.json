@@ -6,5 +6,6 @@
     "host": "postgresql-arkadashiim.alwaysdata.net",
     "dialect": "postgres"
   },
-  "jwt":"jwt-dev"
+  "jwt":"jwt-dev",
+  "pgChars":600
 }
