@@ -186,10 +186,10 @@ module.exports.getFilteredBooks = async function (req, res) {
         // function for define a sort type
         const ordering = () => {
             switch (req.body.sortID) {
-                case 1: return ['title'];
-                case 2: return [['title', 'DESC']];
-                case 3: return ['price'];
-                case 4: return [['price', 'DESC']];
+                case 1: return ['price'];
+                case 2: return [['price', 'DESC']];
+                case 3: return ['title'];
+                case 4: return [['title', 'DESC']];
                 default: return null;
             }
         }
