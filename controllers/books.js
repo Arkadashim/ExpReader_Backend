@@ -198,10 +198,10 @@ module.exports.getFilteredBooks = async function (req, res) {
         const rarity = req.body.rarity;
         if (rarity) {
             switch (rarity) {
-                case 1: where.pages = { [Op.gte]: 1, [Op.lte]: 300 }; break;
-                case 2: where.pages = { [Op.gte]: 301, [Op.lte]: 600 }; break;
-                case 3: where.pages = { [Op.gte]: 601, [Op.lte]: 900 }; break;
-                case 4: where.pages = { [Op.gte]: 901 }; break;
+                case 1: where.pages = { [Op.gte]: 1, [Op.lte]: 900 }; break;
+                case 2: where.pages = { [Op.gte]: 901, [Op.lte]: 1800 }; break;
+                case 3: where.pages = { [Op.gte]: 1801, [Op.lte]: 2700 }; break;
+                case 4: where.pages = { [Op.gte]: 2701 }; break;
             }
         }
 
