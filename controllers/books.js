@@ -197,20 +197,11 @@ module.exports.getFilteredBooks = async function (req, res) {
         const where = {}; // decalre where block
         const rarity = req.body.rarity;
         if (rarity) {
-            if (rarity === "common") {
-                where.pages = { [Op.gte]: 1, [Op.lte]: 300 };
-            }
-
-            if (rarity === "rare") {
-                where.pages = { [Op.gte]: 301, [Op.lte]: 600 };
-            }
-
-            if (rarity === "epic") {
-                where.pages = { [Op.gte]: 601, [Op.lte]: 900 };
-            }
-
-            if (rarity === "legendary") {
-                where.pages = { [Op.gte]: 901 };
+            switch (rarity) {
+                case "common": where.pages = { [Op.gte]: 1, [Op.lte]: 300 }; break;
+                case "rare": where.pages = { [Op.gte]: 301, [Op.lte]: 600 }; break;
+                case "epic": where.pages = { [Op.gte]: 601, [Op.lte]: 900 }; break;
+                case "legendary": where.pages = { [Op.gte]: 901 }; break;
             }
         }
 
@@ -253,7 +244,7 @@ module.exports.getFilteredBooks = async function (req, res) {
                     }
                 }
             } else {
-                authorCheck = true; 
+                authorCheck = true;
                 titleCheck = true;
             }
 
@@ -264,8 +255,8 @@ module.exports.getFilteredBooks = async function (req, res) {
                 });
             } else {
                 genres = true;
-            } 
-                
+            }
+
             if ((authorCheck || titleCheck) && genres) {
                 _booksToSend.push(_books[i]);
             }
