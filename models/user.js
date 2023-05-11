@@ -6,6 +6,8 @@ module.exports = (sequelize, DataTypes) => {
     class User extends Model {
         static associate(models) {
             User.belongsTo(models.Role);
+            User.belongsTo(models.Author, { foreignKey: { name: 'favAuthor', allowNull: true } });
+            User.belongsTo(models.Genre, { foreignKey: { name: 'favGenre', allowNull: true } });
         }
     }
     User.init({
