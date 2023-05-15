@@ -34,8 +34,8 @@ module.exports.buyABook = async function (req, res) {
         });
 
         if (created) {
-            res.status(200).send(`Книга успешно добавлена`);
             await ReCountFavs(userId);
+            res.status(200).send(`Книга успешно добавлена`);
         } else {
             res.status(400).send(`Книга уже добавлена`);
         }
