@@ -8,6 +8,7 @@ const User = require('../models/user').Model;
 const Book = require('../models/book').Model;
 const BookAuthor = require('../models/bookauthor').Model;
 const Author = require('../models/author').Model;
+const Genre = require('../models/genre').Model;
 
 // const UserAchieves = require('../models/userachieves').Model;
 // auth in header
@@ -20,10 +21,19 @@ module.exports.getUserData = async function (req, res) {
             where: { UserId: userId },
             include: {
                 model: User,
+                include: [{
+                    model: Author,
+                    attributes: []
+                },{
+                    model: Genre,
+                    attributes: []
+                }],
                 attributes: []
             },
             attributes: [
                 [Sequelize.col('User.nickname'), 'nickname'],
+                [Sequelize.col('User.Author.name'), 'favAuthor'],
+                [Sequelize.col('User.Genre.genre'), 'favGenre'],
                 ['readPages', 'readPagesNum'],
                 ['readBooks', 'readBooksNum'],
                 'achievements'
