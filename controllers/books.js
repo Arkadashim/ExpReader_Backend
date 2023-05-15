@@ -6,6 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const Book = require('../models/book').Model;
+const User = require('../models/user').Model;
 const Author = require('../models/author').Model;
 const Genre = require('../models/genre').Model;
 const Favorite = require('../models/favorite').Model;
@@ -267,4 +268,65 @@ module.exports.getFilteredBooks = async function (req, res) {
         eH(res, err);
     }
 
+}
+
+module.exports.getRecommendedBooks = async function (req, res) {
+    try {
+        const uID = req.user?.id;
+
+        const _favs = await User.findOne({ where: { id: uID }, attributes: ['favAuthor', 'favGenre'] });
+        if (!_favs.favAuthor && !_favs.favGenre) {
+            return res.status(404).send(null);
+        }
+        var byAuth = {};
+        var byGenre = {};
+        var notUsedIds = [];
+        if (_favs.favAuthor) {
+            byAuth = await BookAuthor.findAll({
+                raw: true,
+                where: { AuthorId: _favs.favAuthor },
+                include: { model: Book, attributes: [] },
+                attributes: [
+                    [Sequelize.col('Book.id'), 'id'],
+                    [Sequelize.col('Book.title'), 'title'],
+                    [Sequelize.col('Book.cover'), 'cover'],
+                    [Sequelize.col('Book.cost'), 'price'],
+                ]
+            });
+
+            byAuth.forEach(element => {
+                notUsedIds.push(element.id);
+            });
+        }
+
+        if (_favs.favGenre) {
+            byGenre = await BookGenre.findAll({
+                raw: true,
+                where: { [Op.and]: [{ GenreId: _favs.favGenre }, { BookId: { [Op.notIn]: notUsedIds } }] },
+                include: { model: Book, attributes: [] },
+                attributes: [
+                    [Sequelize.col('Book.id'), 'id'],
+                    [Sequelize.col('Book.title'), 'title'],
+                    [Sequelize.col('Book.cover'), 'cover'],
+                    [Sequelize.col('Book.cost'), 'price'],
+                ]
+            });
+        }
+
+        const data = byAuth.concat(byGenre);
+        for (const i in data) {
+            data[i].authors = await BookAuthor.findAll({
+                raw: true,
+                where: { BookId: data[i]?.id },
+                include: { model: Author, attributes: [] },
+                attributes: [
+                    [Sequelize.col('Author.name'), 'name']
+                ]
+            }).then(authors => authors.map(authors => authors.name));
+        }
+
+        res.status(200).json(data);
+    } catch (err) {
+        eH(res, err);
+    }
 }

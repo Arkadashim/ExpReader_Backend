@@ -8,5 +8,6 @@ router.get('/getLibBooks', passport.authenticate('jwt', {session: false}), contr
 router.post('/buyABook', passport.authenticate('jwt', {session: false}), controller.buyABook);
 router.post('/downloadBook', passport.authenticate('jwt', {session: false}), controller.downloadBook);
 router.post('/getFilteredBooks', passport.authenticate('jwt', {session: false}), controller.getFilteredBooks);
+router.get('/getRecommendedBooks', passport.authenticate('jwt', {session: false}), controller.getRecommendedBooks);
 
 module.exports = router;
