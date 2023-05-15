@@ -8,7 +8,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "sync": "node algorithms/sync.js",
-    "count": "node algorithms/countBookPages.js"
+    "count-pages": "node algorithms/countBookPages.js",
+    "count-favs": "node algorithms/countFavs.js"
   },
   "keywords": [],
   "author": "",
