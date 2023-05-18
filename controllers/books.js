@@ -1,5 +1,5 @@
 const eH = require('../middleware/errorHandler');
-const { Sequelize } = require('../models');
+const { Sequelize, sequelize } = require('../models');
 const { Op } = require("sequelize");
 const { insensitiveLike } = require('../middleware/comparer');
 const fs = require('node:fs');
@@ -277,7 +277,27 @@ module.exports.getRecommendedBooks = async function (req, res) {
 
         const _favs = await User.findOne({ where: { id: uID }, attributes: ['favAuthor', 'favGenre'] });
         if (!_favs.favAuthor && !_favs.favGenre) {
-            return res.status(404).send(null);
+            const books = await Book.findAll({
+                raw: true,
+                order: sequelize.random(),
+                limit: 5,
+                attributes: [
+                    'id', 'title', 'cover', ['cost', 'price'],
+                ],
+            });
+
+            for (const i in books) {
+                books[i].authors = await BookAuthor.findAll({
+                    raw: true,
+                    where: { BookId: books[i]?.id },
+                    include: { model: Author, attributes: [] },
+                    attributes: [
+                        [Sequelize.col('Author.name'), 'name']
+                    ]
+                }).then(authors => authors.map(authors => authors.name));
+            }
+
+            return res.status(200).json(books);
         }
         var byAuth = {};
         var byGenre = {};
